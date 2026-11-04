@@ -1,0 +1,30 @@
+{
+  "name": "bills-public",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx esbuild src/frontend/main.js --bundle --minify --outfile=public/app.js --format=iife",
+    "build:dev": "npx esbuild src/frontend/main.js --bundle --outfile=public/app.js --format=iife --sourcemap",
+    "typecheck": "npx tsc --noEmit",
+    "dev": "npm run build:dev && npx wrangler dev --local",
+    "deploy": "npm run build && npx wrangler deploy",
+    "db:migrate:local": "npx wrangler d1 migrations apply bills-public-db --local",
+    "db:migrate:remote": "npx wrangler d1 migrations apply bills-public-db --remote"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261102.1",
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.156.1"
+  },
+  "dependencies": {
+    "@clerk/backend": "^3.26.5",
+    "@clerk/clerk-js": "^6.42.1",
+    "esbuild": "^0.28.2",
+    "hono": "^4.13.16"
+  }
+}

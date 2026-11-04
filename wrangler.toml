@@ -1,0 +1,45 @@
+# Cloudflare Worker for the public Bills Dashboard (bills.laudeus.org)
+# Multi-user bills/subscriptions tracker with Clerk auth and D1 storage.
+#
+# DEPLOY (after credentials are set — see README.md):
+#   npm run build        # bundle the frontend
+#   npx wrangler d1 create bills-public-db   # first time only; paste the id below
+#   npx wrangler d1 migrations apply bills-public-db --remote
+#   npx wrangler secret put CLERK_SECRET_KEY
+#   npx wrangler secret put CLERK_PUBLISHABLE_KEY
+#   npx wrangler deploy
+
+name = "bills-public"
+main = "src/index.ts"
+compatibility_date = "2026-11-02"
+compatibility_flags = ["nodejs_compat"]
+account_id = "2048be62a67a4de048200227e2095446"
+
+# Custom domain: bills.laudeus.org (wrangler provisions the DNS record and
+# certificate on deploy).
+routes = [{ pattern = "bills.laudeus.org", custom_domain = true }]
+
+# Public origin for this app. Used for Clerk authorizedParties (CSRF protection)
+# and for building absolute links.
+[vars]
+APP_URL = "https://bills.laudeus.org"
+
+# Static frontend (public/) served by Workers Static Assets.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# D1 database for users, bills, payments and settings.
+# TODO (first deploy): run `npx wrangler d1 create bills-public-db` and replace
+# the placeholder database_id below with the id it prints.
+[[d1_databases]]
+binding = "DB"
+database_name = "bills-public-db"
+database_id = "9c991109-77b5-4eb7-896e-26bad4f3e75e"
+
+# Daily reminder check. 14:00 UTC = 09:00 EST in winter (10:00 EDT in summer).
+# The scheduled handler computes due reminders and logs them; the frontend
+# surfaces them via GET /api/reminders. Email/push delivery is a future step
+# (needs a mail provider key — see README.md).
+[triggers]
+crons = ["0 14 * * *"]

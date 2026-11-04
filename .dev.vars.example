@@ -1,0 +1,7 @@
+# Local dev only. Copy to .dev.vars and fill in Clerk TEST keys.
+# Never commit real keys. Production keys are set with:
+#   npx wrangler secret put CLERK_PUBLISHABLE_KEY
+#   npx wrangler secret put CLERK_SECRET_KEY
+CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+APP_URL=http://localhost:8787
